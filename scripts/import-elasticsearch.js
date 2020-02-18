@@ -53,11 +53,10 @@ async function run() {
 // Fonction utilitaire permettant de formatter les données pour l'insertion "bulk" dans elastic
 function createBulkInsertQuery(heroes) {
   const body = heroes.reduce((acc, hero) => {
-    const { id, ...params } = hero;
-    acc.push({
-      index: { _index: heroesIndexName, _type: "_doc", _id: id }
+      acc.push({
+      index: { _index: heroesIndexName, _type: "_doc", _id: hero.id }
     });
-    acc.push(params);
+    acc.push(hero);
     return acc;
   }, []);
 
