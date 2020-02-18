@@ -13,7 +13,16 @@ async function run() {
   try {
     if (!(await checkIfIndexExists(client, heroesIndexName))) {
       await client.indices.create({
-        index: heroesIndexName
+        index: heroesIndexName,
+        body: {
+          mappings: {
+            properties: {
+              suggest: { type: "completion" },
+              name: { type: "keyword" },
+              secretIdentities: { type: "keyword" }
+            }
+          }
+        }
       });
       console.log("Created index " + heroesIndexName);
     } else {
@@ -33,7 +42,13 @@ async function run() {
       })
     )
     .on("data", data => {
-      heroes.push(data);
+      heroes.push({
+        ...data,
+        suggest: [
+          { input: data.name, weight: 10 },
+          { input: data.secretIdentities, weight: 5 }
+        ]
+      });
       if (heroes.length > MAX_CHUNK_SIZE) {
         client.bulk(createBulkInsertQuery(heroes));
         heroes = [];
@@ -53,7 +68,7 @@ async function run() {
 // Fonction utilitaire permettant de formatter les données pour l'insertion "bulk" dans elastic
 function createBulkInsertQuery(heroes) {
   const body = heroes.reduce((acc, hero) => {
-      acc.push({
+    acc.push({
       index: { _index: heroesIndexName, _type: "_doc", _id: hero.id }
     });
     acc.push(hero);

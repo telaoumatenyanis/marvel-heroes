@@ -15,7 +15,7 @@ async function run() {
 
   const db = client.db(dbName);
 
-  const heroCollection = db.collection("heroes");
+  const heroCollection = db.collection(collectionName);
 
   let heroes = [];
 
@@ -58,7 +58,7 @@ async function run() {
         speed,
         durability,
         power,
-        combat,
+        combat
       } = data;
       console.log(data);
       heroes.push({

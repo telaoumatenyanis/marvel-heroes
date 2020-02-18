@@ -6,6 +6,7 @@ import env.ElasticConfiguration;
 import env.MarvelHeroesConfiguration;
 import models.PaginatedResults;
 import models.SearchedHero;
+import play.libs.Json;
 import play.libs.ws.WSClient;
 import utils.SearchedHeroSamples;
 
@@ -62,12 +63,23 @@ public class ElasticRepository {
     }
 
     public CompletionStage<List<SearchedHero>> suggest(String input) {
-        return CompletableFuture.completedFuture(Arrays.asList(SearchedHeroSamples.IronMan(), SearchedHeroSamples.MsMarvel(), SearchedHeroSamples.SpiderMan()));
-        // TODO
-        // return wsClient.url(elasticConfiguration.uri + "...")
-        //         .post(Json.parse("{ ... }"))
-        //         .thenApply(response -> {
-        //             return ...
-        //         });
+        return wsClient.url(elasticConfiguration.uri + "/heroes/_search")
+                .post(Json.parse("{     \"suggest\": {\n" +
+                        "        \"heroes-suggest\" : {\n" +
+                        "            \"prefix\" : \"" + input + "\", \n" +
+                        "            \"completion\" : { \n" +
+                        "                \"field\" : \"suggest\" \n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    } }"))
+                .thenApply(response -> {
+                    final List<SearchedHero> heroes = new ArrayList<>();
+                    final JsonNode hits = response.asJson().get("suggest").get("heroes-suggest").get(0).get("options");
+                    hits.elements().forEachRemaining(e -> {
+                        heroes.add(SearchedHero.fromJson(e.get("_source")));
+                    });
+
+                    return heroes;
+                });
     }
 }
