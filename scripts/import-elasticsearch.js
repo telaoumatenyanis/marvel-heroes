@@ -1,7 +1,5 @@
 const csv = require("csv-parser");
 const fs = require("fs");
-const { chunk } = require("lodash/fp");
-const bluebird = require("bluebird");
 const { Client } = require("@elastic/elasticsearch");
 const heroesIndexName = "heroes";
 
