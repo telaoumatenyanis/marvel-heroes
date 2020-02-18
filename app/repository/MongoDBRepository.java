@@ -51,53 +51,56 @@ public class MongoDBRepository {
         return ReactiveStreamsUtils.fromMultiPublisher(heroesCollection.aggregate(pipeline))
                 .thenApply(documents -> {
                     return documents.stream()
-                                    .map(Document::toJson)
-                                    .map(Json::parse)
-                                    .map(jsonNode -> {
-                                        int year = jsonNode.findPath("_id").findPath("yearAppearance").asInt();
-                                        ArrayNode byUniverseNode = (ArrayNode) jsonNode.findPath("byUniverse");
-                                        Iterator<JsonNode> elements = byUniverseNode.elements();
-                                        Iterable<JsonNode> iterable = () -> elements;
-                                        List<ItemCount> byUniverse = StreamSupport.stream(iterable.spliterator(), false)
-                                                .map(node -> new ItemCount(node.findPath("universe").asText(), node.findPath("count").asInt()))
-                                                .collect(Collectors.toList());
-                                        return new YearAndUniverseStat(year, byUniverse);
+                            .map(Document::toJson)
+                            .map(Json::parse)
+                            .map(jsonNode -> {
+                                int year = jsonNode.findPath("_id").findPath("yearAppearance").asInt();
+                                ArrayNode byUniverseNode = (ArrayNode) jsonNode.findPath("byUniverse");
+                                Iterator<JsonNode> elements = byUniverseNode.elements();
+                                Iterable<JsonNode> iterable = () -> elements;
+                                List<ItemCount> byUniverse = StreamSupport.stream(iterable.spliterator(), false)
+                                        .map(node -> new ItemCount(node.findPath("universe").asText(), node.findPath("count").asInt()))
+                                        .collect(Collectors.toList());
+                                return new YearAndUniverseStat(year, byUniverse);
 
-                                    })
-                                    .collect(Collectors.toList());
+                            })
+                            .collect(Collectors.toList());
                 });
     }
 
 
     public CompletionStage<List<ItemCount>> topPowers(int top) {
-        return CompletableFuture.completedFuture(new ArrayList<>());
-        // TODO
-        // List<Document> pipeline = new ArrayList<>();
-        // return ReactiveStreamsUtils.fromMultiPublisher(heroesCollection.aggregate(pipeline))
-        //         .thenApply(documents -> {
-        //             return documents.stream()
-        //                     .map(Document::toJson)
-        //                     .map(Json::parse)
-        //                     .map(jsonNode -> {
-        //                         return new ItemCount(jsonNode.findPath("_id").asText(), jsonNode.findPath("count").asInt());
-        //                     })
-        //                     .collect(Collectors.toList());
-        //         });
+        List<Document> pipeline = new ArrayList<>();
+        pipeline.add(Document.parse("{\"$unwind\": {path: \"$powers\"}}"));
+        pipeline.add(Document.parse("{\"$group\" : {_id:\"$powers\" ,count:{\"$sum\": 1}}}"));
+        pipeline.add(Document.parse("{\"$sort\": {\"count\": -1}}"));
+        pipeline.add(Document.parse("{\"$limit\": 5}"));
+
+        return ReactiveStreamsUtils.fromMultiPublisher(heroesCollection.aggregate(pipeline))
+                .thenApply(documents -> {
+                    return documents.stream()
+                            .map(Document::toJson)
+                            .map(Json::parse)
+                            .map(jsonNode -> {
+                                return new ItemCount(jsonNode.findPath("_id").asText(), jsonNode.findPath("count").asInt());
+                            })
+                            .collect(Collectors.toList());
+                });
     }
 
     public CompletionStage<List<ItemCount>> byUniverse() {
-         List<Document> pipeline = new ArrayList<>();
-         pipeline.add(Document.parse("{\"$group\": {_id: \"$identity.universe\", count: {$sum: 1}}}"));
-         return ReactiveStreamsUtils.fromMultiPublisher(heroesCollection.aggregate(pipeline))
-                 .thenApply(documents -> {
-                     return documents.stream()
-                             .map(Document::toJson)
-                             .map(Json::parse)
-                             .map(jsonNode -> {
-                                 return new ItemCount(jsonNode.findPath("_id").asText(), jsonNode.findPath("count").asInt());
-                             })
-                             .collect(Collectors.toList());
-                 });
+        List<Document> pipeline = new ArrayList<>();
+        pipeline.add(Document.parse("{\"$group\": {_id: \"$identity.universe\", count: {$sum: 1}}}"));
+        return ReactiveStreamsUtils.fromMultiPublisher(heroesCollection.aggregate(pipeline))
+                .thenApply(documents -> {
+                    return documents.stream()
+                            .map(Document::toJson)
+                            .map(Json::parse)
+                            .map(jsonNode -> {
+                                return new ItemCount(jsonNode.findPath("_id").asText(), jsonNode.findPath("count").asInt());
+                            })
+                            .collect(Collectors.toList());
+                });
     }
 
 }
