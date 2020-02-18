@@ -57,7 +57,7 @@ public class ElasticRepository {
 
             return new PaginatedResults<>(totalSize, page, (int) Math.ceil(totalSize / size), heroes);
         })  ;
-        System.out.println(result);
+
         return result;
     }
 
