@@ -27,9 +27,17 @@ async function run() {
       })
     )
     .on("data", async data => {
-      heroes.push(data);
+      const { teams, powers, partners, creators } = data;
+
+      heroes.push({
+        ...data,
+        teams: teams === "" ? [] : teams.split(","),
+        powers: powers === "" ? [] : powers.split(","),
+        partners: partners === "" ? [] : partners.split(","),
+        creators: creators === "" ? [] : creators.split(",")
+      });
       if (heroes.length > MAX_CHUNK_SIZE) {
-        await heroCollection.insertMany(heroes);
+        await heroCollection.insertMany();
         heroes = [];
       }
     })
