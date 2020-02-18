@@ -27,14 +27,79 @@ async function run() {
       })
     )
     .on("data", async data => {
-      const { teams, powers, partners, creators } = data;
-
+      const {
+        id,
+        name,
+        imageUrl,
+        secretIdentities,
+        backgroundImageUrl,
+        externalLink,
+        description,
+        teams,
+        powers,
+        partners,
+        creators,
+        birthPlace,
+        occupation,
+        aliases,
+        alignment,
+        firstAppearance,
+        yearAppearance,
+        universe,
+        gender,
+        type,
+        race,
+        height,
+        weight,
+        eyeColor,
+        hairColor,
+        intelligence,
+        strength,
+        speed,
+        durability,
+        power,
+        combat,
+      } = data;
+      console.log(data);
       heroes.push({
-        ...data,
+        id,
+        name,
+        imageUrl,
+        backgroundImageUrl,
+        externalLink,
+        description,
+        identity: {
+          secretIdentities:
+            secretIdentities === "" ? [] : secretIdentities.split(","),
+          birthPlace: birthPlace,
+          occupation: occupation,
+          aliases: aliases === "" ? [] : aliases.split(","),
+          alignment: alignment,
+          firstAppearance: firstAppearance,
+          yearAppearance: yearAppearance,
+          universe
+        },
+        appearance: {
+          gender: gender,
+          type: type,
+          race: race,
+          height: height,
+          weight: weight,
+          eyeColor: eyeColor,
+          hairColor: hairColor
+        },
         teams: teams === "" ? [] : teams.split(","),
         powers: powers === "" ? [] : powers.split(","),
         partners: partners === "" ? [] : partners.split(","),
-        creators: creators === "" ? [] : creators.split(",")
+        creators: creators === "" ? [] : creators.split(","),
+        skills: {
+          intelligence,
+          strength,
+          speed,
+          durability,
+          power,
+          combat
+        }
       });
       if (heroes.length > MAX_CHUNK_SIZE) {
         await heroCollection.insertMany();
