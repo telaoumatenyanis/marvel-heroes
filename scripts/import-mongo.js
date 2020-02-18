@@ -60,7 +60,6 @@ async function run() {
         power,
         combat
       } = data;
-      console.log(data);
       heroes.push({
         id,
         name,
@@ -93,12 +92,12 @@ async function run() {
         partners: partners === "" ? [] : partners.split(","),
         creators: creators === "" ? [] : creators.split(","),
         skills: {
-          intelligence,
-          strength,
-          speed,
-          durability,
-          power,
-          combat
+          intelligence: parseFloat(intelligence),
+          strength: parseFloat(strength),
+          speed: parseFloat(speed),
+          durability: parseFloat(durability),
+          power: parseFloat(power),
+          combat: parseFloat(combat)
         }
       });
       if (heroes.length > MAX_CHUNK_SIZE) {
