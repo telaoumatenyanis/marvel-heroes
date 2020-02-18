@@ -9,7 +9,7 @@
     "mongodb": "3.5.2"
   },
   "scripts": {
-    "mongo-import": "node --max_old_space_size=5096 import-mongo.js",
-    "es-import": "node --max_old_space_size=5096 import-elasticsearch.js"
+    "import-mongo": "node --max_old_space_size=5096 import-mongo.js",
+    "import-es": "node --max_old_space_size=5096 import-elasticsearch.js"
   }
 }
