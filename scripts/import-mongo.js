@@ -60,6 +60,7 @@ async function run() {
         power,
         combat
       } = data;
+
       heroes.push({
         id,
         name,
@@ -69,10 +70,10 @@ async function run() {
         description,
         identity: {
           secretIdentities:
-            secretIdentities === "" ? [] : secretIdentities.split(","),
+            secretIdentities.length === 0 ? [] : secretIdentities.split(","),
           birthPlace: birthPlace,
           occupation: occupation,
-          aliases: aliases === "" ? [] : aliases.split(","),
+          aliases: aliases.length === 0 ? [] : aliases.split(","),
           alignment: alignment,
           firstAppearance: firstAppearance,
           yearAppearance: yearAppearance,
@@ -87,17 +88,16 @@ async function run() {
           eyeColor: eyeColor,
           hairColor: hairColor
         },
-        teams: teams === "" ? [] : teams.split(","),
-        powers: powers === "" ? [] : powers.split(","),
-        partners: partners === "" ? [] : partners.split(","),
-        creators: creators === "" ? [] : creators.split(","),
+        teams: teams.length === 0 ? [] : teams.split(","),
+        powers: powers.length === 0 ? [] : powers.split(","),
+        partners: partners.length === 0 ? [] : partners.split(","),
+        creators: creators.length === 0 ? [] : creators.split(","),
         skills: {
-          intelligence: parseFloat(intelligence),
-          strength: parseFloat(strength),
-          speed: parseFloat(speed),
-          durability: parseFloat(durability),
-          power: parseFloat(power),
-          combat: parseFloat(combat)
+          intelligence: formatSkill(intelligence),
+          strength: formatSkill(strength),
+          speed: formatSkill(speed),
+          power: formatSkill(power),
+          combat: formatSkill(combat)
         }
       });
       if (heroes.length > MAX_CHUNK_SIZE) {
@@ -115,5 +115,8 @@ async function run() {
       }
     });
 }
+
+formatSkill = skill =>
+  !isNaN(skill) && skill.length !== 0 ? parseFloat(skill) : 0;
 
 run().catch(console.error);
