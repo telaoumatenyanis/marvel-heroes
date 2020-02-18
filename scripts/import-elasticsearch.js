@@ -44,6 +44,7 @@ async function run() {
         ...data,
         suggest: [
           { input: data.name, weight: 10 },
+          { input: data.aliases, weight: 5},
           { input: data.secretIdentities, weight: 5 }
         ]
       });
