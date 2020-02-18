@@ -80,8 +80,13 @@ Les données sont disponibles dans le dossier `scripts/all-heroes.csv` et provie
 
 
 ## Liens utiles
+
 * Suggestion avec Elasticsearch : https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-suggesters.html#completion-suggester
 * Aggrégations avec MongoDB : https://docs.mongodb.com/manual/meta/aggregation-quick-reference/
+
+Drivers Java utilisés : 
+* Driver Redis *Lettuce* : https://lettuce.io/
+* Driver MongoDB réactif : https://mongodb.github.io/mongo-java-driver-reactivestreams/
 
 
 ## Pour rendre le travail
