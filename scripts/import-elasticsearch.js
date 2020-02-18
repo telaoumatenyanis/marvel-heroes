@@ -18,8 +18,6 @@ async function run() {
           mappings: {
             properties: {
               suggest: { type: "completion" },
-              name: { type: "keyword" },
-              secretIdentities: { type: "keyword" }
             }
           }
         }
