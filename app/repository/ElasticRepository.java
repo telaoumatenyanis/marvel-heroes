@@ -42,7 +42,7 @@ public class ElasticRepository {
                 "    \"query\" : {\n" +
                 "                \"query_string\" : {\n" +
                 "                        \"fields\": [\"name^4\", \"secretIdentities^3\", \"aliases^3\", \"description^2\", \"partners^1\"],\n" +
-                "                        \"query\": \"" + input + "~\" }\n" +
+                "                        \"query\": \"*" + input.replaceAll(" ", "*") + "*~\" }\n" +
                 "            }\n" +
                 "}";
 
@@ -56,7 +56,7 @@ public class ElasticRepository {
             });
             int totalSize = hits.get("total").get("value").asInt();
 
-            return new PaginatedResults<>(totalSize, page, (int) Math.ceil(totalSize / size), heroes);
+            return new PaginatedResults<>(totalSize, page, Math.max(1, (int) Math.ceil((double) totalSize / (double) size)), heroes);
         });
 
         return result;
