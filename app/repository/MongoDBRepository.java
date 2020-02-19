@@ -41,8 +41,6 @@ public class MongoDBRepository {
     }
 
     public CompletionStage<List<YearAndUniverseStat>> countByYearAndUniverse() {
-        //return CompletableFuture.completedFuture(new ArrayList<>());
-        // TODO
         List<Document> pipeline = new ArrayList<>();
         pipeline.add(Document.parse("{\"$match\": {\"identity.yearAppearance\": {\"$ne\" : \"\"}}}"));
         pipeline.add(Document.parse("{\"$group\": {_id: {yearAppearance: \"$identity.yearAppearance\", universe: \"$identity.universe\"}, count: {$sum: 1}}}"));
